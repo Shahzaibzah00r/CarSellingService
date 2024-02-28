@@ -1,7 +1,7 @@
 import CarDetails from "@/modals/carDetails";
 import { connect } from "@/dbConfig/dbConfig";
 import Jwt from "jsonwebtoken";
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 // database run
 connect()
 
