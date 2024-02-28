@@ -1,0 +1,17 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-direction: column;
+  gap: 1rem;
+  h1 {
+    color: #1677ff;
+    border-bottom: 2px solid #1677ff;
+  }
+
+  .form {
+    width: 62em;
+  }
+}
