@@ -8,6 +8,8 @@ import { Button, Form, Input, InputNumber, Modal, Radio, Select, Upload } from '
 import "./carDetails.scss"
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import ManualUploadNode from '@/Components/ManualUpload';
+import { manualNormFile } from '@/Components/ManualNowFile';
 
 
 
@@ -37,20 +39,14 @@ const CarDetails = () => {
     };
 
     const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
-    // const handleChange = (newFileList) => {
-    //     console.log("images is: ", newFileList)
-    // };
 
     const onFinish = async (values) => {
-        console.log('Success:', values);
         const formData = new FormData();
-        fileList?.forEach((image) => {
-            formData.append("file", image);
+        fileList?.forEach((image, index) => {
+            formData.append(`file`, image.originFileObj);
         });
-        console.log("form data is: ", formData);
-
         try {
-            const res = await axios.post("api/users/details", formData)
+            const res = await axios.post("api/users/details", values)
             if (res) {
                 toast.success("Car Data Posted Success")
             }

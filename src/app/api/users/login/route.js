@@ -14,7 +14,7 @@ export async function POST(req, res) {
 
         const data = await Users.findOne({ email: email, password: password })
 
-        // console.log(data);
+        console.log(data);
         if (data) {
 
             // jwt token payload
