@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import Users from "../../../../modals/user";
 import Jwt from "jsonwebtoken";
 import { connect } from "@/dbConfig/dbConfig";

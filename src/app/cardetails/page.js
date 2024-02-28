@@ -8,8 +8,6 @@ import { Button, Form, Input, InputNumber, Modal, Radio, Select, Upload } from '
 import "./carDetails.scss"
 import toast from 'react-hot-toast';
 import axios from 'axios';
-import ManualUploadNode from '@/Components/ManualUpload';
-import { manualNormFile } from '@/Components/ManualNowFile';
 
 
 
