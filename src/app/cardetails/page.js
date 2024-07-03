@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 // Utility components from ANTD
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Button, Form, Input, InputNumber, Modal, Radio, Select, Upload } from 'antd';
+import { Button, Form, Input, InputNumber, Modal, Radio, Select, Space, Upload } from 'antd';
 import { Typography } from 'antd';
 const { Text } = Typography;
 
@@ -26,6 +26,7 @@ const CarDetails = () => {
     const [previewTitle, setPreviewTitle] = useState('');
     const [loading, setLoading] = useState(false)
     const [fileList, setFileList] = useState([]);
+    const [form] = Form.useForm();
     const handleCancel = () => setPreviewOpen(false);
 
     const handlePreview = async (file) => {
@@ -60,6 +61,7 @@ const CarDetails = () => {
             const res = await axios.post("/api/users/details", formData);
             if (res) {
                 setLoading(false)
+                handleReset()
                 toast.success("Car Data Posted Successfully");
             }
         } catch (error) {
@@ -68,12 +70,18 @@ const CarDetails = () => {
         }
     };
 
+    const handleReset = () => {
+        form.resetFields()
+        setFileList([]);
+    };
+
     return (
         <div className="container">
             <h1> Car Selling Service</h1>
             <Form
                 className='form'
                 onFinish={onFinish}
+                onReset={handleReset}
                 autoComplete="off"
             >
                 <Form.Item
@@ -188,9 +196,15 @@ const CarDetails = () => {
                     </Modal>
                 </Form.Item>
                 <Form.Item >
-                    <Button type="primary" htmlType="submit" style={{ width: '100%' }} loading={loading}>
-                        Add Car
-                    </Button>
+                    <Space>
+                        <Button type="primary" htmlType="submit" loading={loading}>
+                            Add Car
+                        </Button>
+
+                        <Button htmlType="reset" >
+                            Reset
+                        </Button>
+                    </Space>
                 </Form.Item>
             </Form>
         </div>
