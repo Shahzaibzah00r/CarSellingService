@@ -24,14 +24,6 @@ const detailSchema = mongoose.Schema({
     pictures: [
         {
             url: { type: String },
-            name: { type: String },
-            size: { type: Number },
-            lastModifiedDate: { type: String },
-            type: { type: String },
-            uid: { type: String },
-            status: { type: String },
-            thumbUrl: { type: String },
-            path: { type: String },
         }
     ],
     userId: {

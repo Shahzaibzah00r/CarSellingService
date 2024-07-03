@@ -1,27 +1,29 @@
 "use client"
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
 // utility functions
 import { Button, Form, Input } from 'antd';
 import axios from 'axios';
-import toast, { Toaster } from 'react-hot-toast';
-
+import toast from 'react-hot-toast';
 // Style classes
-import "./login/loginPage.scss"
+import "./loginPage.scss"
 
 const Login = () => {
+  const [loading, setLoading] = useState(false)
 
   const router = useRouter()
   const onFinish = async (values) => {
     try {
+      setLoading(true)
       const res = await axios.post("api/users/login", values)
       if (res) {
+        setLoading(false)
         toast.success("Login Success")
         router.push("/cardetails")
       }
 
     } catch (error) {
+      setLoading(false)
       toast.error('Some error Occured')
     }
   };
@@ -33,9 +35,9 @@ const Login = () => {
           className='form'
           layout='vertical'
           autoComplete="off"
+          initialValues={{ email: 'Amjad@desolint.com', password: '123456abc' }}
           onFinish={onFinish}
         >
-          {/* Email field */}
           <Form.Item
             label="Email"
             name="email"
@@ -50,7 +52,6 @@ const Login = () => {
             <Input />
           </Form.Item>
 
-          {/* Password field */}
           <Form.Item
             label="Password"
             name="password"
@@ -63,9 +64,8 @@ const Login = () => {
           >
             <Input.Password />
           </Form.Item>
-          {/* Btn */}
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={loading}>
               Submit
             </Button>
           </Form.Item>

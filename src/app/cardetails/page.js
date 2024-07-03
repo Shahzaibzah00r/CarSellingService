@@ -1,32 +1,33 @@
 "use client"
 import React, { useState } from 'react';
-
-// Utility componets form ANTD
+// Utility components from ANTD
+import axios from 'axios';
+import toast from 'react-hot-toast';
 import { Button, Form, Input, InputNumber, Modal, Radio, Select, Upload } from 'antd';
+import { Typography } from 'antd';
+const { Text } = Typography;
 
 // Style SCSS
 import "./carDetails.scss"
-import toast from 'react-hot-toast';
-import axios from 'axios';
+import Image from 'next/image';
 
-
+const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
 
 const CarDetails = () => {
-
-    const getBase64 = (file) =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-        });
-
     const [noOfPics, setNoOfPics] = useState(1);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
+    const [loading, setLoading] = useState(false)
     const [fileList, setFileList] = useState([]);
     const handleCancel = () => setPreviewOpen(false);
+
     const handlePreview = async (file) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
@@ -39,21 +40,33 @@ const CarDetails = () => {
     const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
 
     const onFinish = async (values) => {
-        const formData = new FormData();
-        fileList?.forEach((image, index) => {
-            formData.append(`file`, image.originFileObj);
-        });
-        try {
-            const res = await axios.post("api/users/details", values)
-            if (res) {
-                toast.success("Car Data Posted Success")
-            }
 
+        if (fileList.length !== parseInt(values.noOfCopy, 10)) {
+            toast.error(`Please select exactly ${values.noOfCopy} image(s).`);
+            return;
+        }
+        setLoading(true)
+        const formData = new FormData();
+        fileList.forEach((file, index) => {
+            formData.append(`file${index}`, file.originFileObj);
+        });
+        formData.append('city', values.city);
+        formData.append('noOfCopy', values.noOfCopy);
+        formData.append('phone', values.phone);
+        formData.append('price', values.price);
+        formData.append('carModal', values.carModal);
+
+        try {
+            const res = await axios.post("/api/users/details", formData);
+            if (res) {
+                setLoading(false)
+                toast.success("Car Data Posted Successfully");
+            }
         } catch (error) {
-            toast.error('Some error Occured')
+            setLoading(false)
+            toast.error('Some error occurred');
         }
     };
-
 
     return (
         <div className="container">
@@ -63,7 +76,6 @@ const CarDetails = () => {
                 onFinish={onFinish}
                 autoComplete="off"
             >
-                {/* Car modal */}
                 <Form.Item
                     label="Car Modal"
                     name="carModal"
@@ -81,21 +93,19 @@ const CarDetails = () => {
                     <Input />
                 </Form.Item>
 
-                {/* Price of the car */}
                 <Form.Item
                     label="Price"
                     name="price"
                     rules={[
                         {
                             required: true,
-                            message: 'Please the car price!',
+                            message: 'Please input the car price!',
                         },
                     ]}
                 >
                     <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
 
-                {/* Phone number for Car details */}
                 <Form.Item
                     label="Phone"
                     name="phone"
@@ -116,7 +126,6 @@ const CarDetails = () => {
                     <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
 
-                {/* City for Car details */}
                 <Form.Item
                     label="City"
                     name="city"
@@ -133,7 +142,6 @@ const CarDetails = () => {
                     </Radio.Group>
                 </Form.Item>
 
-                {/* No of pictures for Car details */}
                 <Form.Item
                     label="No. of pictures"
                     name="noOfCopy" >
@@ -154,13 +162,14 @@ const CarDetails = () => {
                     </Select>
                 </Form.Item>
 
-                {/* Multiple pictures for Car details */}
                 <Form.Item >
                     <Upload
                         listType="picture-circle"
                         fileList={fileList}
+                        beforeUpload={() => false}
                         onPreview={handlePreview}
                         onChange={handleChange}
+                        name="file"
                     >
                         {fileList.length >= noOfPics ? null :
                             <button style={{ border: 0, background: 'none', }} type="button" >
@@ -170,22 +179,16 @@ const CarDetails = () => {
                                 </div>
                             </button>}
                     </Upload>
+                    {fileList.length == noOfPics ? null : <Text type="danger">{`${noOfPics - fileList.length} Images are required`}</Text>}
                     <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
-                        <img
+                        <Image
                             alt="car pictures"
-                            style={{
-                                width: '100%',
-                            }}
                             src={previewImage}
                         />
                     </Modal>
                 </Form.Item>
-
-                {/* Submit Button for Car details */}
-                <Form.Item
-
-                >
-                    <Button type="primary" htmlType="submit" style={{ width: '100%' }} >
+                <Form.Item >
+                    <Button type="primary" htmlType="submit" style={{ width: '100%' }} loading={loading}>
                         Add Car
                     </Button>
                 </Form.Item>

@@ -6,12 +6,9 @@ export function middleware(request) {
     const publicPath = request.nextUrl.pathname == "/"
 
     if (token && publicPath) {
-        console.log("no public");
-
         return NextResponse.redirect(new URL('/cardetails', request.url))
     }
     if (!token && !publicPath) {
-        console.log(" public");
         return NextResponse.redirect(new URL('/', request.url))
     }
 }
